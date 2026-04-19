@@ -219,6 +219,8 @@ For IoT/hardware: also Connection status, Alert queue, Manual override.
 
 ### Phase 3 — Build via Background Agent
 
+> **Who runs Phase 2?** The subagent does — not the main agent. Phase 2 above describes what the subagent must do before building. The main agent's job is to complete Phase 1 (gather answers), fill the brief below, and dispatch.
+
 Dispatch a background agent (`run_in_background: true`) with the complete brief. The agent handles Phase 2 (plan) + build + Phase 4 (subagent mode). Main conversation is free once dispatched.
 
 **Construct and dispatch this prompt:**
@@ -226,37 +228,9 @@ Dispatch a background agent (`run_in_background: true`) with the complete brief.
 > **Brief discipline:** The brief contains FINDINGS and CONTEXT — what the user said, what the audit found, what's broken and why it matters. It does NOT contain CSS snippets, JS code, or implementation instructions. The subagent decides HOW to build. The brief tells it WHAT and WHY.
 
 ```
-You are a senior UI/UX designer and product thinker who builds.
+You are a subagent running the product-ui skill. Apply the Role defined at the top of the skill — you are a senior UI/UX designer and product thinker who builds. Beautiful and useful are the same goal. You think in product terms first, design second. You fix the right problem at the right scope.
 
-Beautiful and useful are the same goal — not a tradeoff. A screen that works but looks unfinished is unfinished. A screen that looks polished but confuses users is a failure. You ship both together.
-
-You think in product terms before design:
-- What is the user trying to accomplish?
-- What matters most on this screen?
-- What is noise vs essential?
-- What states and edge cases exist beyond the happy path?
-
-You are direct, but grounded:
-- You call out real problems a user would feel — not theoretical issues
-- You prioritize what matters most instead of listing everything
-- You explain why something is a problem in terms of user impact
-
-You fix the right problem at the right scope:
-- For new builds, design the full experience correctly
-- For existing products, improve what's broken without unnecessary rewrites
-- Never introduce changes that break consistency with the existing system
-
-You design for reality:
-- All states must exist (empty, loading, error, success)
-- Actions must be obvious
-- Interfaces must guide, not just display
-
-You build with intention:
-Every layout, color, and interaction must serve clarity, confidence, or speed — otherwise it should not be there.
-
----
-
-You are a subagent running the product-ui skill Phase 2–4. Complete brief from Phase 1 below.
+Complete brief from Phase 1 below.
 
 PHASE 2 — Run in order:
 2a. Two-lens thinking: answer product lens, user lens, synthesis sentence
@@ -481,7 +455,7 @@ A standard web pattern can still look broken. Trust what you see, not what you r
 - Exterior whitespace (between components, sections): normal and good
 - Interior whitespace (inside a single row or item, between elements that belong together): a defect unless it clearly separates two distinct groups of content
 
-Semantically paired elements must be visually adjacent: a label and its count, an icon and its label, a key and its value. If your eye has to scan across a gap to connect a label to its number — that is a layout defect. The cause is usually `margin-left: auto` or `justify-content: space-between` on a flex row pushing a related value to the far edge. Fix: remove the auto-push and use a small explicit gap instead. Exception: `margin-left: auto` is intentional when it genuinely separates two distinct groups (title on left + action button on right) — not when it pushes a value away from its own label.
+Semantically paired elements must be visually adjacent: a label and its count, an icon and its label, a key and its value. If your eye has to scan across a gap to connect a label to its number — that is a layout defect. Fix it: group the paired elements together with a small explicit gap. Exception: a large interior gap is intentional only when it genuinely separates two distinct functional groups (e.g., title on left + action button on right). If the gap separates a value from its own label, it is not intentional.
 
 Then answer these from what you see in the image — not from the code:
 
@@ -566,7 +540,7 @@ A standard web pattern can still look broken. Trust what you see, not what you r
 - Exterior whitespace (between components, sections): normal and good
 - Interior whitespace (inside a single row or item, between elements that belong together): a defect unless it clearly separates two distinct groups of content
 
-Semantically paired elements must be visually adjacent: a label and its count, an icon and its label, a key and its value. If your eye has to scan across a gap to connect a label to its number — that is a layout defect. The cause is usually `margin-left: auto` or `justify-content: space-between` on a flex row pushing a related value to the far edge. Fix: remove the auto-push and use a small explicit gap instead. Exception: `margin-left: auto` is intentional when it genuinely separates two distinct groups (title on left + action button on right) — not when it pushes a value away from its own label.
+Semantically paired elements must be visually adjacent: a label and its count, an icon and its label, a key and its value. If your eye has to scan across a gap to connect a label to its number — that is a layout defect. Fix it: group the paired elements together with a small explicit gap. Exception: a large interior gap is intentional only when it genuinely separates two distinct functional groups (e.g., title on left + action button on right). If the gap separates a value from its own label, it is not intentional.
 
 Then answer these:
 
@@ -586,11 +560,22 @@ If the audit reveals issues outside the scope of this change, flag them to the u
 
 ### Build
 
-Make the targeted change. Use existing tokens — no new values. Accessibility rules still apply: aria-labels, focus states, cursor-pointer, contrast 4.5:1.
+Make the targeted change. Rules:
+- Use existing tokens — no new values unless the change genuinely requires one
+- Accessibility: aria-labels, focus states, cursor-pointer on interactive elements, contrast 4.5:1
+- Don't fix what isn't broken — scope is defined by what the audit found, not by what's nearby
+- If the audit found issues outside this change's scope: flag them in your output, don't silently fix them
+
+If the audit revealed a structural problem (not just the targeted change), address it — structural chrome (nav, layout, shell) is always in scope if broken. Flag what you fixed and why.
 
 ### Light Feedback
 
-One check: "Does this match the rest of the product, or does anything feel off?"
+Take a screenshot after the change. Answer:
+- Does the change look consistent with the rest of the product?
+- Did the change inadvertently affect anything nearby — layout shift, visual regression?
+- Is anything the audit flagged still unresolved?
+
+If yes to anything: fix it or flag it explicitly.
 
 Update `tokens.css` only if the change introduces a genuinely new pattern worth persisting.
 
