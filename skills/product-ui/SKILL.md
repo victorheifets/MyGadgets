@@ -471,11 +471,17 @@ If structural: start the server, then screenshot every section the user can see:
 3. Navigate to each section/tab/state that exists — screenshot each one
 4. `pkill -f "http.server 8899"`
 
-For each screenshot, audit it as a designed composition — not a checklist of correct parts.
+For each screenshot, mentally defocus — ignore what you know about web patterns and conventions. Look at the screen as pure shapes, distances, and groupings.
 
-A UI can be logically correct and still look broken. A component can contain the right elements and still feel unresolved. Your job is to identify where the design feels **accidental instead of intentional**.
+Ask: what visually belongs together? Are those things actually close to each other? For every element you see, identify what it belongs to, then describe whether it sits close to that thing or is separated from it. If an element is visually far from what it belongs to — flag it as a layout defect, regardless of whether the pattern is technically correct.
 
-Judge whether relationships, emphasis, spacing, alignment, sizing, and placement create clarity and confidence. If something looks technically valid but visually weak, awkward, disconnected, or unfinished — call it out and explain why it harms the screen. Prefer visual judgment over structural correctness.
+A standard web pattern can still look broken. Trust what you see, not what you recognize.
+
+**Also hunt specifically for interior whitespace — whitespace INSIDE a component rather than between components.**
+- Exterior whitespace (between components, sections): normal and good
+- Interior whitespace (inside a single row or item, between elements that belong together): a defect unless it clearly separates two distinct groups of content
+
+Semantically paired elements must be visually adjacent: a label and its count, an icon and its label, a key and its value. If your eye has to scan across a gap to connect a label to its number — that is a layout defect. The cause is usually `margin-left: auto` or `justify-content: space-between` on a flex row pushing a related value to the far edge. Fix: remove the auto-push and use a small explicit gap instead. Exception: `margin-left: auto` is intentional when it genuinely separates two distinct groups (title on left + action button on right) — not when it pushes a value away from its own label.
 
 Then answer these from what you see in the image — not from the code:
 
@@ -550,11 +556,17 @@ If structural: start the server, screenshot every section the user can see:
 
 A user sees the screen — not the code. Empty space, broken layouts, buried content, wasted regions: these are visible in one glance and invisible in code review.
 
-**Step 2 — Audit each screenshot as a designed composition — not a checklist of correct parts.**
+**Step 2 — Mentally defocus each screenshot — ignore what you know about web patterns and conventions. Look at the screen as pure shapes, distances, and groupings.**
 
-A UI can be logically correct and still look broken. A component can contain the right elements and still feel unresolved. Your job is to identify where the design feels **accidental instead of intentional**.
+Ask: what visually belongs together? Are those things actually close to each other? For every element you see, identify what it belongs to, then describe whether it sits close to that thing or is separated from it. If an element is visually far from what it belongs to — flag it as a layout defect, regardless of whether the pattern is technically correct.
 
-Judge whether relationships, emphasis, spacing, alignment, sizing, and placement create clarity and confidence. If something looks technically valid but visually weak, awkward, disconnected, or unfinished — call it out and explain why it harms the screen. Prefer visual judgment over structural correctness.
+A standard web pattern can still look broken. Trust what you see, not what you recognize.
+
+**Also hunt specifically for interior whitespace — whitespace INSIDE a component rather than between components.**
+- Exterior whitespace (between components, sections): normal and good
+- Interior whitespace (inside a single row or item, between elements that belong together): a defect unless it clearly separates two distinct groups of content
+
+Semantically paired elements must be visually adjacent: a label and its count, an icon and its label, a key and its value. If your eye has to scan across a gap to connect a label to its number — that is a layout defect. The cause is usually `margin-left: auto` or `justify-content: space-between` on a flex row pushing a related value to the far edge. Fix: remove the auto-push and use a small explicit gap instead. Exception: `margin-left: auto` is intentional when it genuinely separates two distinct groups (title on left + action button on right) — not when it pushes a value away from its own label.
 
 Then answer these:
 
